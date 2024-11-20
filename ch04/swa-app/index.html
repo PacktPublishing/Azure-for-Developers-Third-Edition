@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Static Web App</title>
+</head>
+
+<body>
+    <h1>Welcome to Azure Static Web App</h1>
+    <h2>Login</h2>
+    <p>
+        <a href="/.auth/login/aad">Login with Entra ID</a><br>
+        <a href="/.auth/login/github">Login with GitHub</a>
+    </p>
+
+    <div id="user-info-block" style="display: none;">
+        <h2>User Info</h2>
+        <p id="user-info">
+            <strong>User ID:</strong> <span id="user-id"></span><br>
+            <strong>User Name:</strong> <span id="user-name"></span><br>
+            <strong>User Email:</strong> <span id="user-email"></span><br>
+            <strong>User Roles:</strong> <span id="user-roles"></span>
+        </p>
+    </div>
+
+    <div id="message-block">
+        <h2>Message</h2>
+        <p id="message"></p>
+    </div>
+
+    <script src="./script.js"></script>
+    <script>
+        (async function() {
+            const response = await fetch(`/api/weatherforeacst`);
+            const message = await response.json();
+            document.querySelector('#message').textContent = message;
+        }());
+    </script>
+        
+</body>
+
+</html>

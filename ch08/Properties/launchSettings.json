@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ch08": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7273",
+      "launchBrowser": false
+    }
+  }
+}

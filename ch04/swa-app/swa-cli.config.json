@@ -1,0 +1,9 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "swa-app": {
+      "appLocation": ".",
+      "outputLocation": "."
+    }
+  }
+}
