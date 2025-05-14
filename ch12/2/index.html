@@ -1,0 +1,13 @@
+<html> 
+<head> 
+    <title>Chapter 12</title> 
+</head> 
+<body> 
+    <h1>Hello!</h1> 
+    <h2>This is containerized application for Azure App Service!</h2> 
+</body> 
+<script> 
+    var response = fetch('http://localhost:3000'); 
+    response.then(async _ => console.info(await _.text())); 
+</script> 
+</html> 

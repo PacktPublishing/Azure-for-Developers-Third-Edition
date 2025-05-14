@@ -1,0 +1,13 @@
+services: 
+  main: 
+    build:  
+      context: . 
+      dockerfile: main.Dockerfile 
+    ports: 
+      - "8080:80" 
+  sidecar: 
+    build:  
+      context: . 
+      dockerfile: sidecar.Dockerfile 
+    ports: 
+      - "3000:3000" 
