@@ -1,0 +1,63 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Http_with_Retry": {
+        "type": "Http",
+        "inputs": {
+          "method": "GET",
+          "uri": "https://example.com/api/resource"
+        },
+        "policy": {
+          "retryPolicy": {
+            "type": "exponential",
+            "interval": "PT5S",
+            "count": 4,
+            "minimumInterval": "PT5S",
+            "maximumInterval": "PT1M"
+          }
+        },
+        "runAfter": {}
+      },
+      "Return_response": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": {
+            "message": "HTTP call completed with retry policy.",
+            "httpStatus": "@outputs('Http_with_Retry')?['statusCode']"
+          }
+        },
+        "runAfter": {
+          "Http_with_Retry": ["Succeeded"]
+        }
+      },
+      "Return_error": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 500,
+          "body": {
+            "message": "HTTP call failed after retries.",
+            "error": "@{outputs('Http_with_Retry')?['body']}"
+          }
+        },
+        "runAfter": {
+          "Http_with_Retry": ["Failed"]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {}
+}

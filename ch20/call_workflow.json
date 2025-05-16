@@ -1,0 +1,49 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Call_Another_Workflow": {
+        "type": "Workflow",
+        "inputs": {
+          "host": {
+            "workflow": {
+              "id": "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Logic/workflows/person_workflow"
+            }
+          },
+          "method": "POST",
+          "path": "/triggers/manual/paths/invoke",
+          "body": {
+            "name": "John",
+            "surname": "Doe"
+          }
+        },
+        "runAfter": {}
+      },
+      "Return_response": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": {
+            "message": "Called another workflow.",
+            "result": "@outputs('Call_Another_Workflow')"
+          }
+        },
+        "runAfter": {
+          "Call_Another_Workflow": ["Succeeded"]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {}
+}

@@ -1,0 +1,86 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Parse_JSON": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@triggerBody()",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "surname": { "type": "string" }
+            },
+            "required": ["name", "surname"]
+          }
+        },
+        "runAfter": {}
+      },
+      "Create_blob": {
+        "type": "ApiConnection",
+        "inputs": {
+          "host": {
+            "connection": {
+              "name": "@parameters('$connections')['azureblob']['connectionId']"
+            }
+          },
+          "method": "post",
+          "path": "/v2/datasets/@{encodeURIComponent('default')}/files",
+          "queries": {
+            "folderPath": "logicapp-outputs",
+            "name": "@{concat(outputs('Parse_JSON')?['body/name'], '_', outputs('Parse_JSON')?['body/surname'], '.json')}"
+          },
+          "body": {
+            "name": "@{outputs('Parse_JSON')?['body/name']}",
+            "surname": "@{outputs('Parse_JSON')?['body/surname']}"
+          },
+          "authentication": "@parameters('$authentication')"
+        },
+        "runAfter": {
+          "Parse_JSON": ["Succeeded"]
+        }
+      },
+      "Return_response": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": {
+            "message": "Saved to blob storage"
+          }
+        },
+        "runAfter": {
+          "Create_blob": ["Succeeded"]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "surname": { "type": "string" }
+            },
+            "required": ["name", "surname"]
+          }
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "Object"
+    }
+  }
+}

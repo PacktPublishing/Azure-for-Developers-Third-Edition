@@ -1,0 +1,74 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Initialize_variable": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "counter",
+              "type": "int",
+              "value": 0
+            }
+          ]
+        },
+        "runAfter": {}
+      },
+      "Until": {
+        "type": "Until",
+        "expression": {
+          "and": [
+            {
+              "less": [
+                "@variables('counter')",
+                10
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "Increment_variable": {
+            "type": "IncrementVariable",
+            "inputs": {
+              "name": "counter",
+              "value": 1
+            },
+            "runAfter": {}
+          }
+        },
+        "runAfter": {
+          "Initialize_variable": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Return_counter": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": {
+            "message": "Counter value is @{variables('counter')}"
+          }
+        },
+        "runAfter": {
+          "Until": [
+            "Succeeded"
+          ]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {}
+}

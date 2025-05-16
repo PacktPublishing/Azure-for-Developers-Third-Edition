@@ -1,0 +1,67 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Initialize_name": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "name",
+              "type": "string",
+              "value": "John"
+            }
+          ]
+        },
+        "runAfter": {}
+      },
+      "Initialize_surname": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "surname",
+              "type": "string",
+              "value": "Doe"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_name": ["Succeeded"]
+        }
+      },
+      "Compose_person": {
+        "type": "Compose",
+        "inputs": {
+          "name": "@variables('name')",
+          "surname": "@variables('surname')"
+        },
+        "runAfter": {
+          "Initialize_surname": ["Succeeded"]
+        }
+      },
+      "Return_person": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": "@outputs('Compose_person')"
+        },
+        "runAfter": {
+          "Compose_person": ["Succeeded"]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {}
+}
