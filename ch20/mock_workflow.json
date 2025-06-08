@@ -1,0 +1,106 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Initialize_environment": {
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "environment",
+              "type": "string",
+              "value": "@{parameters('environment')}"
+            }
+          ]
+        },
+        "runAfter": {}
+      },
+      "Condition_-_Check_environment": {
+        "type": "If",
+        "expression": {
+          "equals": [
+            "@variables('environment')",
+            "test"
+          ]
+        },
+        "actions": {
+          "Mock_API_response": {
+            "type": "Compose",
+            "inputs": {
+              "id": "mock-id-12345",
+              "name": "Mock User",
+              "email": "mock@example.com",
+              "status": "active"
+            },
+            "runAfter": {}
+          }
+        },
+        "else": {
+          "actions": {
+            "Call_real_API": {
+              "type": "Http",
+              "inputs": {
+                "method": "GET",
+                "uri": "https://api.example.com/users/1"
+              },
+              "runAfter": {}
+            }
+          }
+        },
+        "runAfter": {
+          "Initialize_environment": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Process_user_data": {
+        "type": "Compose",
+        "inputs": {
+          "userData": "@if(equals(variables('environment'), 'test'), outputs('Mock_API_response'), outputs('Call_real_API'))",
+          "processedAt": "@utcNow()"
+        },
+        "runAfter": {
+          "Condition_-_Check_environment": [
+            "Succeeded"
+          ]
+        }
+      },
+      "Return_response": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": "@outputs('Process_user_data')"
+        },
+        "runAfter": {
+          "Process_user_data": [
+            "Succeeded"
+          ]
+        }
+      }
+    },
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {
+    "environment": {
+      "type": "string",
+      "defaultValue": "production",
+      "allowedValues": [
+        "production",
+        "test"
+      ],
+      "metadata": {
+        "description": "Environment type (production or test)"
+      }
+    }
+  }
+}
