@@ -7,14 +7,6 @@ param logicAppName string = 'SimpleHttpWorkflow'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('Specifies the SKU tier of the Logic App.')
-@allowed(['WorkflowStandard', 'WorkflowPremium'])
-param sku string = 'WorkflowStandard'
-
-@description('Specifies the name of the SKU.')
-@allowed(['Standard', 'Premium'])
-param skuName string = 'Standard'
-
 // Define the Logic App resource
 resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
   name: logicAppName
@@ -55,10 +47,6 @@ resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
       outputs: {}
     }
     parameters: {}
-  }
-  sku: {
-    name: skuName
-    tier: sku
   }
 }
 
